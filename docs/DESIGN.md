@@ -138,3 +138,9 @@ All four screens were designed as a wireframe in a single React/JSX artifact fil
 ## 8. Known quirks
 
 - Earlier in this project, a stale/cached render of the wireframe artifact didn't reflect several rounds of already-made updates to the underlying file. If a change is reported as "didn't take," check whether the file itself is current before assuming a code bug — it may just be a stale preview needing a refresh/reopen.
+
+---
+
+## 9. Changelog
+
+- **2026-08-22:** Repo initialized (`git init`), initial commit made with the Android Studio scaffold + this design doc. Git identity configured globally (Nick Foskette / nfoskette94@gmail.com). GitHub remote `origin` added (`https://github.com/nfoxtrot/Arc.git`), local branch renamed `master` → `main`. Claude Code Remote Control connected for mobile/phone access to this session.
