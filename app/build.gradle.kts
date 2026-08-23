@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    namespace = "project.arc"
+    namespace = "com.nfoskette.arc"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "project.arc"
+        applicationId = "com.nfoskette.arc"
         minSdk = 31
         targetSdk = 37
         versionCode = 1

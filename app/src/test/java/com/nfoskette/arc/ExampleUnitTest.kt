@@ -1,4 +1,4 @@
-package project.arc
+package com.nfoskette.arc
 
 import org.junit.Test
 

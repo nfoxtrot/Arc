@@ -1,4 +1,4 @@
-package project.arc
+package com.nfoskette.arc
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import project.arc.ui.theme.ARCTheme
+import com.nfoskette.arc.ui.theme.ARCTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

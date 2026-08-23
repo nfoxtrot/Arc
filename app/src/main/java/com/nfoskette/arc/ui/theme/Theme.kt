@@ -1,4 +1,4 @@
-package project.arc.ui.theme
+package com.nfoskette.arc.ui.theme
 
 import android.app.Activity
 import android.os.Build

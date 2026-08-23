@@ -1,4 +1,4 @@
-package project.arc
+package com.nfoskette.arc
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("project.arc", appContext.packageName)
+        assertEquals("com.nfoskette.arc", appContext.packageName)
     }
 }
