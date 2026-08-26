@@ -28,10 +28,13 @@ class RouteState {
     val canAddChapter: Boolean
         get() = chapters.size < 3
 
+    // Chapters are optional (2026-08-26, requirement lifted on request) - a route
+    // is valid with just Start/End topic and zero chapters. `chapters.all {}` on an
+    // empty list is vacuously true, so this only blocks confirm when a chapter
+    // exists but is left blank, not when there are no chapters at all.
     val canConfirm: Boolean
         get() = startTopic.isNotBlank() &&
             endTopic.isNotBlank() &&
-            chapters.isNotEmpty() &&
             chapters.all { it.title.isNotBlank() }
 
     fun addChapter() {
@@ -39,7 +42,7 @@ class RouteState {
     }
 
     fun removeChapter(id: String) {
-        if (chapters.size > 1) chapters.removeAll { it.id == id }
+        chapters.removeAll { it.id == id }
     }
 
     fun moveChapter(fromIndex: Int, toIndex: Int) {

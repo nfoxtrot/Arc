@@ -119,7 +119,7 @@ fun BuilderScreen(
                     isLocked = routeState.isLocked,
                     canMoveLeft = index > 0,
                     canMoveRight = index < routeState.chapters.lastIndex,
-                    canRemove = routeState.chapters.size > 1,
+                    canRemove = true, // chapters are optional now, can go to zero
                     onTitleChange = { chapter.title = it },
                     onMoveLeft = { routeState.moveChapter(index, index - 1) },
                     onMoveRight = { routeState.moveChapter(index, index + 1) },
