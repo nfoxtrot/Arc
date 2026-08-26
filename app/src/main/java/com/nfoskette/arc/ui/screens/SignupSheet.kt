@@ -22,14 +22,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.nfoskette.arc.ui.UserState
 
 // One-time signup bottom sheet (docs/DESIGN.md ยง4). NOT a permanent screen/tab —
 // shown automatically the first time the app opens while signed out.
 // "Continue with Google" is a stub here — real OAuth wiring is backend/auth work
-// not yet started.
+// not yet started; it deliberately does NOT set isSignedIn, since faking a
+// successful OAuth sign-in would misrepresent what's actually implemented.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignupSheet(onDismiss: () -> Unit) {
+fun SignupSheet(userState: UserState, onDismiss: () -> Unit) {
     val sheetState = rememberModalBottomSheetState()
     var preferredName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -97,7 +99,12 @@ fun SignupSheet(onDismiss: () -> Unit) {
                 password.isNotEmpty() && password == confirmPassword
 
             Button(
-                onClick = onDismiss,
+                onClick = {
+                    userState.preferredName = preferredName
+                    userState.email = email
+                    userState.isSignedIn = true
+                    onDismiss()
+                },
                 enabled = canSubmit,
                 modifier = Modifier.fillMaxWidth()
             ) {

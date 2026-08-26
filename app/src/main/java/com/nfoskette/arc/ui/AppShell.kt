@@ -5,14 +5,19 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -22,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -30,6 +36,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nfoskette.arc.ui.screens.BuilderScreen
 import com.nfoskette.arc.ui.screens.HomeScreen
 import com.nfoskette.arc.ui.screens.LessonScreen
+import com.nfoskette.arc.ui.screens.ProfileScreen
 import com.nfoskette.arc.ui.screens.SignupSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,6 +47,7 @@ fun AppShell(
 ) {
     val navController = rememberNavController()
     val routeState = remember { RouteState() }
+    val userState = remember { UserState() }
     // First-launch signup bottom sheet (docs/DESIGN.md ยง4): shown once while signed
     // out. There's no real auth/persistence yet, so this just defaults to shown —
     // wiring "signed out" + "already seen it" state is real backend/DataStore work
@@ -89,8 +97,13 @@ fun AppShell(
                                 restoreState = true
                             }
                         },
-                        icon = { Text(tabIcon(tab)) },
-                        label = { Text(tab.label) }
+                        icon = { Icon(tabIcon(tab), contentDescription = tab.label) },
+                        label = { Text(tab.label) },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            indicatorColor = MaterialTheme.colorScheme.primaryContainer
+                        )
                     )
                 }
             }
@@ -129,18 +142,25 @@ fun AppShell(
             composable(ArcRoute.Lesson.route) {
                 LessonScreen(routeState = routeState, isDarkTheme = isDarkTheme)
             }
+            composable(ArcRoute.Profile.route) {
+                ProfileScreen(
+                    userState = userState,
+                    onRequestSignIn = { showSignupSheet = true }
+                )
+            }
         }
     }
 
     if (showSignupSheet) {
-        SignupSheet(onDismiss = { showSignupSheet = false })
+        SignupSheet(userState = userState, onDismiss = { showSignupSheet = false })
     }
 }
 
-// Waypoint-style single-glyph icons standing in for the ⌂ ✎ ▤ icon set from the
-// wireframe spec, until real vector icons are added.
-private fun tabIcon(tab: ArcRoute): String = when (tab) {
-    ArcRoute.Home -> "⌂"
-    ArcRoute.Builder -> "✎"
-    ArcRoute.Lesson -> "▤"
+// Real Material icons, replacing the placeholder ⌂ ✎ ▤ glyphs the wireframe spec
+// used as stand-ins.
+private fun tabIcon(tab: ArcRoute): ImageVector = when (tab) {
+    ArcRoute.Home -> Icons.Filled.Home
+    ArcRoute.Builder -> Icons.Filled.Edit
+    ArcRoute.Lesson -> Icons.AutoMirrored.Filled.List
+    ArcRoute.Profile -> Icons.Filled.Person
 }
