@@ -1,55 +1,57 @@
 package com.nfoskette.arc.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+// NOTE on Material You dynamic color: minSdk 31 was chosen specifically so dynamic
+// color is *available* on every installable device (see docs/DESIGN.md ยง5), but the
+// ARC design system also specifies exact brand color tokens for both light and dark
+// mode (ยง3). Those are two different things: dynamic color derives its palette from
+// the user's wallpaper (varies per device/user), while ARC's tokens are a fixed
+// brand identity. This theme uses the fixed ARC tokens, NOT dynamicLightColorScheme/
+// dynamicDarkColorScheme, so the brand looks consistent everywhere. If per-device
+// dynamic theming is wanted later instead, that's a real design decision to make
+// explicitly, not something to fall back to silently.
+
+private val ArcLightColorScheme = lightColorScheme(
+    primary = LightAccent,
+    onPrimary = LightCard,
+    primaryContainer = LightAccentSoft,
+    onPrimaryContainer = LightInk,
+    background = LightBg,
+    onBackground = LightInk,
+    surface = LightCard,
+    onSurface = LightInk,
+    surfaceVariant = LightBgAlt,
+    onSurfaceVariant = LightInkSoft,
+    outline = LightLine,
+    outlineVariant = LightLine,
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+private val ArcDarkColorScheme = darkColorScheme(
+    primary = DarkAccent,
+    onPrimary = DarkBg,
+    primaryContainer = DarkAccentSoft,
+    onPrimaryContainer = DarkInk,
+    background = DarkBg,
+    onBackground = DarkInk,
+    surface = DarkCard,
+    onSurface = DarkInk,
+    surfaceVariant = DarkBgAlt,
+    onSurfaceVariant = DarkInkSoft,
+    outline = DarkLine,
+    outlineVariant = DarkLine,
 )
 
 @Composable
 fun ARCTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-
+    val colorScheme = if (darkTheme) ArcDarkColorScheme else ArcLightColorScheme
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
