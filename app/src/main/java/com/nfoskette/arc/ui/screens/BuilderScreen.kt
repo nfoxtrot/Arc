@@ -24,12 +24,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material3.Card
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -49,17 +49,23 @@ import com.nfoskette.arc.ui.theme.ArcMonoLabel
 
 // Builder ("Plan a route") screen (docs/DESIGN.md ยง4).
 //
-// Chapters render as a horizontal, snap-scrolling waypoint timeline rather than
-// the wireframe spec's vertical list — a deliberate change (2026-08-26) that
-// leans into the ARC flight-path/waypoint visual language already used in
-// Lesson View (WP-00 codes, mono font), not something the original spec asked
-// for. Scoped to just the chapters — Start/End topic stay as plain fields
-// above, since that's what was actually described as "list view."
+// As of 2026-08-26, Start topic, chapters, and End topic all render as ONE
+// horizontal, snap-scrolling waypoint timeline — Start and End are the fixed
+// endpoints, chapters are the waypoints in between. This replaced an earlier
+// version where Start/End were plain fields above a separate chapters row;
+// splitting them broke the "one journey" mental model the flight-path
+// metaphor is built on, so they were merged on request. Not spec-driven —
+// audited and changed directly.
 //
-// Known simplification vs. the wireframe spec, still flagged: the spec calls
-// for drag-and-drop chapter reordering (⠿ handle). This uses left/right
-// buttons instead — real drag gestures are a follow-up polish item.
-// "✨ Suggest chapters for me" is a stub (no AI backend wired up yet).
+// Known simplifications, still flagged:
+// - Reordering uses left/right chevrons, not real drag-and-drop.
+// - "✨ Suggest chapters for me" is a stub (no AI backend wired up yet), and
+//   is enabled even before Start/End are filled in, which doesn't fully make
+//   sense for what it will eventually do — a flagged audit finding, not
+//   fixed here.
+// - The disabled "Confirm lesson plan" button doesn't explain what's missing
+//   (no inline validation messaging) — another flagged audit finding, not
+//   fixed here.
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BuilderScreen(
@@ -76,32 +82,12 @@ fun BuilderScreen(
             Text("Plan a route", style = MaterialTheme.typography.headlineSmall)
             Spacer(Modifier.height(20.dp))
 
-            OutlinedTextField(
-                value = routeState.startTopic,
-                onValueChange = { routeState.startTopic = it },
-                label = { Text("Start topic") },
-                enabled = !routeState.isLocked,
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-            Spacer(Modifier.height(12.dp))
-            OutlinedTextField(
-                value = routeState.endTopic,
-                onValueChange = { routeState.endTopic = it },
-                label = { Text("End topic") },
-                enabled = !routeState.isLocked,
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-
-            Spacer(Modifier.height(24.dp))
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Chapters", style = MaterialTheme.typography.titleMedium)
+                Text("Your route", style = MaterialTheme.typography.titleMedium)
                 TextButton(onClick = { /* AI suggestion backend not wired up yet */ }, enabled = !routeState.isLocked) {
                     Text("✨ Suggest chapters for me")
                 }
@@ -117,6 +103,15 @@ fun BuilderScreen(
             contentPadding = PaddingValues(horizontal = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
+            item {
+                EndpointCard(
+                    label = "START",
+                    value = routeState.startTopic,
+                    onValueChange = { routeState.startTopic = it },
+                    isLocked = routeState.isLocked
+                )
+            }
+
             itemsIndexed(routeState.chapters, key = { _, chapter -> chapter.id }) { index, chapter ->
                 WaypointCard(
                     index = index,
@@ -136,6 +131,15 @@ fun BuilderScreen(
                 item {
                     AddWaypointCard(onClick = { routeState.addChapter() })
                 }
+            }
+
+            item {
+                EndpointCard(
+                    label = "END",
+                    value = routeState.endTopic,
+                    onValueChange = { routeState.endTopic = it },
+                    isLocked = routeState.isLocked
+                )
             }
         }
 
@@ -209,6 +213,38 @@ private fun WaypointConnector(filled: Boolean) {
                 .height(2.dp)
                 .background(MaterialTheme.colorScheme.outline)
         )
+    }
+}
+
+// Start/End of the route — fixed endpoints on the timeline, not reorderable
+// or removable list items like chapters, so they get a simpler card (just the
+// input, no chevrons/remove button) and a text label ("START"/"END") instead
+// of a WP-code.
+@Composable
+private fun EndpointCard(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    isLocked: Boolean
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        WaypointConnector(filled = true)
+        Spacer(Modifier.height(6.dp))
+        Text(text = label, style = ArcMonoLabel, color = MaterialTheme.colorScheme.primary)
+        Spacer(Modifier.height(8.dp))
+
+        Card(modifier = Modifier.width(WaypointCardWidth)) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                OutlinedTextField(
+                    value = value,
+                    onValueChange = onValueChange,
+                    label = { Text(if (label == "START") "Start topic" else "End topic") },
+                    enabled = !isLocked,
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+            }
+        }
     }
 }
 
