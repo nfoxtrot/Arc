@@ -18,9 +18,10 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -69,10 +70,16 @@ fun LessonScreen(routeState: RouteState, isDarkTheme: Boolean) {
                             modifier = Modifier.size(160.dp)
                         )
                         Spacer(Modifier.height(16.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            OutlinedButton(onClick = { /* Save: no backend yet */ }) { Text("Save") }
-                            OutlinedButton(onClick = { /* Export PDF: no backend yet */ }) { Text("Export PDF") }
-                            OutlinedButton(onClick = { /* Export text: no backend yet */ }) { Text("Export text") }
+                        // Material 3 Expressive ButtonGroup (2026-08-26) - a connected,
+                        // press-to-expand cluster in place of 3 separate outlined buttons.
+                        ButtonGroup(
+                            overflowIndicator = { menuState ->
+                                ButtonGroupDefaults.OverflowIndicator(menuState = menuState)
+                            }
+                        ) {
+                            clickableItem(onClick = { /* Save: no backend yet */ }, label = "Save")
+                            clickableItem(onClick = { /* Export PDF: no backend yet */ }, label = "Export PDF")
+                            clickableItem(onClick = { /* Export text: no backend yet */ }, label = "Export text")
                         }
                         Spacer(Modifier.height(24.dp))
                     }

@@ -13,8 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -78,7 +78,9 @@ fun HomeScreen(
 
         Spacer(Modifier.height(12.dp))
 
-        OutlinedButton(
+        // Material 3 Expressive tonal button (2026-08-26) - the "Material You" soft
+        // pastel-container look for the medium-emphasis CTA, in place of Outlined.
+        FilledTonalButton(
             onClick = onSeeSample,
             modifier = Modifier.fillMaxWidth()
         ) {

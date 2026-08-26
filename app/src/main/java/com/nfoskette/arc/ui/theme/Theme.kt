@@ -21,6 +21,13 @@ private val ArcLightColorScheme = lightColorScheme(
     onPrimary = LightCard,
     primaryContainer = LightAccentSoft,
     onPrimaryContainer = LightInk,
+    // secondaryContainer drives FilledTonalButton's default color. Left unset, it
+    // falls back to Material3's auto-derived tone (a generic lavender-purple that
+    // has nothing to do with ARC's pink) - caught this by actually looking at a
+    // rendered tonal button (2026-08-26), not by reading the token list. Mirroring
+    // primaryContainer here keeps every tonal button visually on-brand.
+    secondaryContainer = LightAccentSoft,
+    onSecondaryContainer = LightInk,
     background = LightBg,
     onBackground = LightInk,
     surface = LightCard,
@@ -36,6 +43,8 @@ private val ArcDarkColorScheme = darkColorScheme(
     onPrimary = DarkBg,
     primaryContainer = DarkAccentSoft,
     onPrimaryContainer = DarkInk,
+    secondaryContainer = DarkAccentSoft,
+    onSecondaryContainer = DarkInk,
     background = DarkBg,
     onBackground = DarkInk,
     surface = DarkCard,

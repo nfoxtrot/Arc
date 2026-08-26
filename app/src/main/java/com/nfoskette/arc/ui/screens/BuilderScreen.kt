@@ -34,7 +34,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -153,7 +153,7 @@ fun BuilderScreen(
                     Text("View lesson")
                 }
                 Spacer(Modifier.height(8.dp))
-                OutlinedButton(
+                FilledTonalButton(
                     onClick = { routeState.isLocked = false },
                     modifier = Modifier.fillMaxWidth()
                 ) {

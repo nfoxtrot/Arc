@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -116,7 +116,7 @@ fun SignupSheet(userState: UserState, onDismiss: () -> Unit) {
 
             Spacer(Modifier.height(8.dp))
 
-            OutlinedButton(
+            FilledTonalButton(
                 onClick = onDismiss,
                 modifier = Modifier.fillMaxWidth()
             ) {
