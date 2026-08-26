@@ -105,7 +105,7 @@ All four screens were designed as a wireframe in a single React/JSX artifact fil
 - **targetSdkVersion: 37** — updated from the previously documented 36 (confirmed 2026-08-22; the gradle file was found to already be on 37, and the user confirmed 37 is the correct/current target rather than the doc).
 - **JDK: 17 minimum, 21 preferred** — required by the modern Android Gradle Plugin (AGP 8.x), not by Material You itself. Android Studio bundles its own JDK (JetBrains Runtime).
 - **IDE:** Android Studio, using the official Anthropic Claude Code plugin (not the unofficial "IntelliClaude"). Requires the Claude Code CLI installed and authenticated separately, then the plugin from JetBrains Marketplace, then restart. Connect via running `claude` in the integrated terminal, or `/ide` from an external terminal.
-- **Suggested but not yet explicitly locked:** Kotlin + Jetpack Compose as the app framework (recommended for first-class Material3/Material You support). Treat as still slightly open until explicitly confirmed.
+- **Kotlin + Jetpack Compose** as the app framework — effectively locked in by implementation as of 2026-08-25 (real screens built on it, see ยง8 changelog), though never explicitly confirmed in so many words. Flagging that distinction rather than silently treating it as formally decided.
 - **Primary test device:** Google Pixel 10 Pro Fold (cover/outer screen + inner/unfolded screen support). Also wants scaling support for the Galaxy Fold and "every phone size" generally.
 
 ---
@@ -114,12 +114,15 @@ All four screens were designed as a wireframe in a single React/JSX artifact fil
 
 | Item | Status |
 |---|---|
-| `[PACKAGE_NAME]` for the Android Studio project (e.g. `com.yourname.arc`) | Not yet provided |
 | `CLAUDE.md` summarizing project context for this repo | Offered, not yet drafted |
 | Profile/Account screen and tab | Not yet designed |
-| 3D brain asset (pre-rendered vs. real-time) | Not yet sourced or created |
-| Kotlin + Jetpack Compose as confirmed framework | Suggested, not explicitly locked |
+| Real-time 3D (Filament/SceneView) integration | Not started — Home/Lesson screens use a static placeholder image of the brain for now, by explicit choice (2026-08-23) |
+| Drag-and-drop chapter reordering (Builder) | Simplified to up/down buttons for now, real drag gesture not implemented |
+| Scrollspy nav (Lesson View) | Simplified to `firstVisibleItemIndex`, not true IntersectionObserver-equivalent behavior |
+| Backend: auth, save/export, AI chapter suggestions | All stubbed/no-op in the UI — no backend wired up |
 | `arc-wireframe.jsx` wireframe file | Not yet added to this repo |
+| Dark-mode blue brain-globe render | Only light-mode pink done; dark mode still uses the same pink placeholder image |
+| Bottom nav selected-tab color | Currently Material3's default-derived color, not explicitly matched to the ARC accent token — minor polish item |
 
 ---
 
@@ -152,3 +155,6 @@ All four screens were designed as a wireframe in a single React/JSX artifact fil
   - Blender 5.2 LTS was installed on this machine (via winget's normal `.msi` path, run interactively by the user — automated installs via winget/choco both failed: winget hit Cloudflare bot protection on download.blender.org, choco hit an elevation/permissions error) to do this rendering/material/baking work headlessly.
   - **Known unresolved problem:** both exported `.glb` files are still huge (brain: 97.8MB, plane: 91.5MB) — baking only fixed the texture; the real weight is Meshy's high-poly mesh geometry, untouched so far. This still needs a decimation/optimization pass before either asset should be considered final or integrated into the actual app.
 - **2026-08-23:** Set up **Git LFS** for `*.glb` (`.gitattributes` added) and committed both 3D assets through it — confirmed the git history only stores small LFS pointer files (~130 bytes each), with the real ~189MB in LFS storage, not bloating the repo. Note for later: GitHub's free tier includes only 1GB LFS storage + 1GB bandwidth/month; these two assets already use ~189MB of that, and every future re-committed version adds more. Not a problem yet, but worth tracking as more/updated 3D assets are added.
+- **2026-08-25:** Optimized both 3D assets: decimated to 150,000 triangles (from ~3.14M each — a naive 20k-triangle first attempt caused visible faceting on the glossy surfaces, so 150k was the quality floor found by testing) plus Draco mesh compression on export. Brain: 97.8MB → 9.1MB (91% smaller). Plane: 91.5MB → 3.1MB (97% smaller). Re-verified visually with no quality loss, re-committed through Git LFS (only ~12MB re-uploaded).
+- **2026-08-25:** Built the first real app screens in Kotlin/Compose, replacing the default template — Home, Signup (bottom sheet), Builder, and Lesson View, plus the navigation shell (bottom tabs, top bar with conditional back arrow + dark/light toggle, slide transitions). Design tokens and typography (Space Grotesk/Inter/IBM Plex Mono, fetched from Google's font repo and bundled locally) are wired up for real, using the ARC brand palette rather than Material You dynamic color (a deliberate choice — see ยง5's `minSdk 31` note for why that tension exists). The optimized pink brain asset was rendered to a static transparent PNG as a placeholder hero image (real-time 3D via Filament/SceneView is still a separate, not-yet-started task). Verified end-to-end on the `Pixel_10_Pro_Fold_API_37` emulator: all three tabs and the signup sheet work correctly. No backend, auth, or AI features are wired up — every non-navigation interactive element (Save/Export, Google sign-in, chapter suggestions) is a stub. Several spec details were simplified for this pass and flagged in ยง6's open items (chapter drag-and-drop, scrollspy behavior) rather than silently treated as done.
+  - Along the way, the Android emulator from the previous session was found to be in a wedged state after ~2 days idle (adb connected at the transport level but the shell was unresponsive, and the adb server itself needed a forceful restart) — fixed by killing and starting a fresh emulator instance rather than continuing to fight the stale one.
