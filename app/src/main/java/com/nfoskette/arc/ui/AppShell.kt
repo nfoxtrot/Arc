@@ -115,6 +115,7 @@ fun AppShell(
         ) {
             composable(ArcRoute.Home.route) {
                 HomeScreen(
+                    isDarkTheme = isDarkTheme,
                     onPlanRoute = { navController.navigate(ArcRoute.Builder.route) },
                     onSeeSample = { navController.navigate(ArcRoute.Lesson.route) }
                 )
@@ -126,7 +127,7 @@ fun AppShell(
                 )
             }
             composable(ArcRoute.Lesson.route) {
-                LessonScreen(routeState = routeState)
+                LessonScreen(routeState = routeState, isDarkTheme = isDarkTheme)
             }
         }
     }

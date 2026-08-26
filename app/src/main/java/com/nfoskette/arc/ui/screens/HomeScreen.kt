@@ -29,6 +29,7 @@ import com.nfoskette.arc.R
 // 3D (Filament/SceneView) integration is a separate, not-yet-started task.
 @Composable
 fun HomeScreen(
+    isDarkTheme: Boolean,
     onPlanRoute: () -> Unit,
     onSeeSample: () -> Unit
 ) {
@@ -41,7 +42,9 @@ fun HomeScreen(
         verticalArrangement = Arrangement.Top
     ) {
         Image(
-            painter = painterResource(R.drawable.brain_globe_hero),
+            painter = painterResource(
+                if (isDarkTheme) R.drawable.brain_globe_hero_dark else R.drawable.brain_globe_hero
+            ),
             contentDescription = "ARC brain-globe",
             modifier = Modifier.size(220.dp)
         )

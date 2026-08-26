@@ -45,7 +45,7 @@ import com.nfoskette.arc.ui.theme.ArcMonoLabel
 // chapter", which is close but not pixel-identical behavior. Save/Export buttons
 // are stubs — no backend for that yet.
 @Composable
-fun LessonScreen(routeState: RouteState) {
+fun LessonScreen(routeState: RouteState, isDarkTheme: Boolean) {
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val activeIndex by remember {
@@ -62,7 +62,9 @@ fun LessonScreen(routeState: RouteState) {
                 item {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                         Image(
-                            painter = painterResource(R.drawable.brain_globe_hero),
+                            painter = painterResource(
+                                if (isDarkTheme) R.drawable.brain_globe_hero_dark else R.drawable.brain_globe_hero
+                            ),
                             contentDescription = "ARC brain-globe",
                             modifier = Modifier.size(160.dp)
                         )
