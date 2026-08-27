@@ -18,9 +18,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.clickable
 import kotlinx.coroutines.launch
@@ -45,6 +49,15 @@ import com.nfoskette.arc.ui.theme.ArcMonoLabel
 // this uses LazyListState.firstVisibleItemIndex as a simpler proxy for "active
 // chapter", which is close but not pixel-identical behavior. Save/Export buttons
 // are stubs — no backend for that yet.
+//
+// Fixed 2026-08-26 (design audit finding): this screen never displayed the
+// route's Start/End topics at all, chapters or not - the "lesson" gave no
+// indication of the actual journey it represented. Most visible with zero
+// chapters (a route can be confirmed with just Start/End since the min-1-
+// chapter requirement was lifted, also 2026-08-26): the screen showed only the
+// brain hero and Save/Export buttons, nothing else. Added a persistent
+// RouteSummaryHeader shown above the chapter list unconditionally, not just as
+// a zero-chapter fallback - it was missing in the with-chapters case too.
 @Composable
 fun LessonScreen(routeState: RouteState, isDarkTheme: Boolean) {
     val listState = rememberLazyListState()
@@ -82,6 +95,12 @@ fun LessonScreen(routeState: RouteState, isDarkTheme: Boolean) {
                             clickableItem(onClick = { /* Export text: no backend yet */ }, label = "Export text")
                         }
                         Spacer(Modifier.height(24.dp))
+
+                        RouteSummaryHeader(
+                            startTopic = routeState.startTopic,
+                            endTopic = routeState.endTopic
+                        )
+                        Spacer(Modifier.height(24.dp))
                     }
                 }
 
@@ -113,6 +132,47 @@ fun LessonScreen(routeState: RouteState, isDarkTheme: Boolean) {
                         .clickable {
                             scope.launch { listState.animateScrollToItem(index) }
                         }
+                )
+            }
+        }
+    }
+}
+
+// Start/End journey summary, shown once above the chapter list regardless of
+// chapter count (see the fix note on LessonScreen above). Blank topics render
+// as "—" rather than being hidden or fabricated - honest about missing data
+// rather than guessing at it, per the project's own "sourced facts, never
+// guesswork" ethos.
+@Composable
+private fun RouteSummaryHeader(startTopic: String, endTopic: String) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp) // matches the container roundness used elsewhere (2026-08-26)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("START", style = ArcMonoLabel, color = MaterialTheme.colorScheme.primary)
+                Spacer(Modifier.height(4.dp))
+                Text(startTopic.ifBlank { "—" }, style = MaterialTheme.typography.titleMedium)
+            }
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowForward,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.padding(horizontal = 12.dp)
+            )
+            Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.End) {
+                Text("END", style = ArcMonoLabel, color = MaterialTheme.colorScheme.primary)
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    endTopic.ifBlank { "—" },
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.End
                 )
             }
         }
