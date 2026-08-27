@@ -135,7 +135,9 @@ private fun ChapterContent(index: Int, title: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(180.dp)
-                .clip(RoundedCornerShape(12.dp)),
+                // 20.dp to match the Material You container roundness applied
+                // across Builder's cards (2026-08-26), was 12.dp
+                .clip(RoundedCornerShape(20.dp)),
             colors = androidx.compose.material3.CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
             )

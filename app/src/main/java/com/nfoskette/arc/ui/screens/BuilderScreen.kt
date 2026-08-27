@@ -35,9 +35,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -233,9 +233,12 @@ private fun EndpointCard(
         Text(text = label, style = ArcMonoLabel, color = MaterialTheme.colorScheme.primary)
         Spacer(Modifier.height(8.dp))
 
-        Card(modifier = Modifier.width(WaypointCardWidth)) {
+        Card(
+            modifier = Modifier.width(WaypointCardWidth),
+            shape = RoundedCornerShape(20.dp) // Material You container roundness (2026-08-26), was the default 12.dp
+        ) {
             Column(modifier = Modifier.padding(12.dp)) {
-                OutlinedTextField(
+                TextField(
                     value = value,
                     onValueChange = onValueChange,
                     label = { Text(if (label == "START") "Start topic" else "End topic") },
@@ -271,7 +274,10 @@ private fun WaypointCard(
         )
         Spacer(Modifier.height(8.dp))
 
-        Card(modifier = Modifier.width(WaypointCardWidth)) {
+        Card(
+            modifier = Modifier.width(WaypointCardWidth),
+            shape = RoundedCornerShape(20.dp) // Material You container roundness (2026-08-26), was the default 12.dp
+        ) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -297,7 +303,7 @@ private fun WaypointCard(
                     ) { Icon(Icons.Filled.Close, contentDescription = "Remove chapter") }
                 }
                 Spacer(Modifier.height(4.dp))
-                OutlinedTextField(
+                TextField(
                     value = chapter.title,
                     onValueChange = onTitleChange,
                     label = { Text("Chapter ${index + 1}") },
@@ -322,8 +328,10 @@ private fun AddWaypointCard(onClick: () -> Unit) {
             modifier = Modifier
                 .width(WaypointCardWidth)
                 .height(96.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
+                // 20.dp to match the Material You container roundness applied to the
+                // real waypoint/endpoint Cards (2026-08-26), was 12.dp
+                .clip(RoundedCornerShape(20.dp))
+                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(20.dp))
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(12.dp),
             contentAlignment = Alignment.Center

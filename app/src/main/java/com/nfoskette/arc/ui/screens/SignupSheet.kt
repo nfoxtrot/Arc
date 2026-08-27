@@ -10,9 +10,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,7 +55,7 @@ fun SignupSheet(userState: UserState, onDismiss: () -> Unit) {
 
             Spacer(Modifier.height(20.dp))
 
-            OutlinedTextField(
+            TextField(
                 value = preferredName,
                 onValueChange = { preferredName = it },
                 label = { Text("Preferred name") },
@@ -63,7 +63,7 @@ fun SignupSheet(userState: UserState, onDismiss: () -> Unit) {
                 singleLine = true
             )
             Spacer(Modifier.height(12.dp))
-            OutlinedTextField(
+            TextField(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Email") },
@@ -71,7 +71,7 @@ fun SignupSheet(userState: UserState, onDismiss: () -> Unit) {
                 singleLine = true
             )
             Spacer(Modifier.height(12.dp))
-            OutlinedTextField(
+            TextField(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Password") },
@@ -80,7 +80,7 @@ fun SignupSheet(userState: UserState, onDismiss: () -> Unit) {
                 visualTransformation = PasswordVisualTransformation()
             )
             Spacer(Modifier.height(12.dp))
-            OutlinedTextField(
+            TextField(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
                 label = { Text("Confirm password") },

@@ -12,9 +12,13 @@ import androidx.compose.runtime.Composable
 // mode (ยง3). Those are two different things: dynamic color derives its palette from
 // the user's wallpaper (varies per device/user), while ARC's tokens are a fixed
 // brand identity. This theme uses the fixed ARC tokens, NOT dynamicLightColorScheme/
-// dynamicDarkColorScheme, so the brand looks consistent everywhere. If per-device
-// dynamic theming is wanted later instead, that's a real design decision to make
-// explicitly, not something to fall back to silently.
+// dynamicDarkColorScheme, so the brand looks consistent everywhere. Revisited on
+// 2026-08-26 (options researched and discussed first - see docs/DESIGN.md ยง9) and
+// reconfirmed: keep the fixed tokens exactly as-is. What changed instead is filling
+// in the surfaceContainer tonal tiers below, which were previously left undefined
+// and silently fell back to Material3's generic neutral-derived tones - the same
+// class of bug the secondaryContainer fix (also ยง9) caught for tonal buttons, just
+// for the surfaceContainer roles Material You's "layered container" look depends on.
 
 private val ArcLightColorScheme = lightColorScheme(
     primary = LightAccent,
@@ -36,6 +40,19 @@ private val ArcLightColorScheme = lightColorScheme(
     onSurfaceVariant = LightInkSoft,
     outline = LightLine,
     outlineVariant = LightLine,
+    // surfaceContainer tiers (2026-08-26): Material You's "objects and containers"
+    // look - Cards, sheets, nav bars sitting as distinct layered surfaces rather than
+    // flat/outlined boxes - relies on these 5 tones existing as a real light-to-dark
+    // ramp. Left unset, all 5 fall back to Material3's generic neutral-gray default,
+    // which reads as "unthemed" next to ARC's warm palette. No new colors invented:
+    // stepped between the two tokens the design system already has for this range
+    // (LightBg, the app background, and LightCard, true white) rather than guessing
+    // new hex values - lowest/low lean toward background, high/highest toward card.
+    surfaceContainerLowest = LightBg,
+    surfaceContainerLow = LightBgAlt,
+    surfaceContainer = LightBgAlt,
+    surfaceContainerHigh = LightCard,
+    surfaceContainerHighest = LightCard,
 )
 
 private val ArcDarkColorScheme = darkColorScheme(
@@ -53,6 +70,11 @@ private val ArcDarkColorScheme = darkColorScheme(
     onSurfaceVariant = DarkInkSoft,
     outline = DarkLine,
     outlineVariant = DarkLine,
+    surfaceContainerLowest = DarkBg,
+    surfaceContainerLow = DarkBgAlt,
+    surfaceContainer = DarkBgAlt,
+    surfaceContainerHigh = DarkCard,
+    surfaceContainerHighest = DarkCard,
 )
 
 @Composable
