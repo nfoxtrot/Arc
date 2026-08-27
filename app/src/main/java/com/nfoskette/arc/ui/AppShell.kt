@@ -19,15 +19,19 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.coroutines.launch
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -54,11 +58,19 @@ fun AppShell(
     // still to do, not something to fake silently as if it were solved.
     var showSignupSheet by remember { mutableStateOf(true) }
 
+    // Backs the "Suggest chapters for me" stub (2026-08-26, user report that
+    // tapping it gave no visible feedback) - a real, visible "not built yet"
+    // response instead of a silent no-op, without pretending the AI feature
+    // itself exists.
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
     val canGoBack = navController.previousBackStackEntry != null
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 navigationIcon = {
@@ -136,7 +148,12 @@ fun AppShell(
             composable(ArcRoute.Builder.route) {
                 BuilderScreen(
                     routeState = routeState,
-                    onConfirmed = { navController.navigate(ArcRoute.Lesson.route) }
+                    onConfirmed = { navController.navigate(ArcRoute.Lesson.route) },
+                    onSuggestChapters = {
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("AI chapter suggestions aren't built yet")
+                        }
+                    }
                 )
             }
             composable(ArcRoute.Lesson.route) {

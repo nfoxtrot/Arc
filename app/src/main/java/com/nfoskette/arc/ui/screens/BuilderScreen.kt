@@ -59,18 +59,24 @@ import com.nfoskette.arc.ui.theme.ArcMonoLabel
 //
 // Known simplifications, still flagged:
 // - Reordering uses left/right chevrons, not real drag-and-drop.
-// - "✨ Suggest chapters for me" is a stub (no AI backend wired up yet), and
-//   is enabled even before Start/End are filled in, which doesn't fully make
-//   sense for what it will eventually do — a flagged audit finding, not
-//   fixed here.
 // - The disabled "Confirm lesson plan" button doesn't explain what's missing
 //   (no inline validation messaging) — another flagged audit finding, not
 //   fixed here.
+//
+// Fixed 2026-08-26 (user report: "when I click suggest chapters for me, I
+// don't see anything load or change"): the button's onClick was a true no-op
+// with zero visible feedback - indistinguishable from broken. It's still a
+// stub (no AI backend wired up), but now tapping it surfaces a Snackbar
+// saying so via onSuggestChapters, instead of doing nothing. Also closed the
+// companion audit finding in the same pass: it was enabled before Start/End
+// were filled in, which never made sense for what it will eventually do -
+// now gated on both being non-blank (in addition to !isLocked).
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BuilderScreen(
     routeState: RouteState,
-    onConfirmed: () -> Unit
+    onConfirmed: () -> Unit,
+    onSuggestChapters: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -88,7 +94,12 @@ fun BuilderScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Your route", style = MaterialTheme.typography.titleMedium)
-                TextButton(onClick = { /* AI suggestion backend not wired up yet */ }, enabled = !routeState.isLocked) {
+                TextButton(
+                    onClick = onSuggestChapters,
+                    enabled = !routeState.isLocked &&
+                        routeState.startTopic.isNotBlank() &&
+                        routeState.endTopic.isNotBlank()
+                ) {
                     Text("✨ Suggest chapters for me")
                 }
             }
