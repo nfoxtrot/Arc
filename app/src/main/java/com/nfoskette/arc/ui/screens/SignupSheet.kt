@@ -5,11 +5,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -21,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.nfoskette.arc.ui.UserState
 
@@ -37,6 +44,10 @@ fun SignupSheet(userState: UserState, onDismiss: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    // Independent per-field reveal state (2026-08-26, audit finding) - revealing one
+    // password field shouldn't reveal the other.
+    var passwordVisible by remember { mutableStateOf(false) }
+    var confirmPasswordVisible by remember { mutableStateOf(false) }
 
     val passwordsMismatch = confirmPassword.isNotEmpty() && password != confirmPassword
 
@@ -77,7 +88,15 @@ fun SignupSheet(userState: UserState, onDismiss: () -> Unit) {
                 label = { Text("Password") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                visualTransformation = PasswordVisualTransformation()
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            if (passwordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                            contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                        )
+                    }
+                }
             )
             Spacer(Modifier.height(12.dp))
             TextField(
@@ -90,7 +109,15 @@ fun SignupSheet(userState: UserState, onDismiss: () -> Unit) {
                 supportingText = {
                     if (passwordsMismatch) Text("Passwords don't match")
                 },
-                visualTransformation = PasswordVisualTransformation()
+                visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
+                        Icon(
+                            if (confirmPasswordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                            contentDescription = if (confirmPasswordVisible) "Hide password" else "Show password"
+                        )
+                    }
+                }
             )
 
             Spacer(Modifier.height(20.dp))
@@ -116,7 +143,14 @@ fun SignupSheet(userState: UserState, onDismiss: () -> Unit) {
 
             Spacer(Modifier.height(8.dp))
 
-            FilledTonalButton(
+            // OutlinedButton, not FilledTonalButton (2026-08-26 audit finding, a
+            // deliberate exception to the "every medium-emphasis button is tonal"
+            // sweep from earlier the same day): a fully-colored tonal button here
+            // visually outweighed the primary "Let's get started" button above it
+            // whenever the form was still invalid (disabled/gray) - the secondary
+            // alt-auth action read as more prominent than the actual primary CTA.
+            // Outlined keeps it clearly secondary regardless of the primary's state.
+            OutlinedButton(
                 onClick = onDismiss,
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -127,7 +161,15 @@ fun SignupSheet(userState: UserState, onDismiss: () -> Unit) {
 
             TextButton(
                 onClick = onDismiss,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                // Default TextButton content color is colorScheme.primary - the same
+                // accent that signals "the enabled primary action" everywhere else in
+                // the app. Using it here too made a low-emphasis dismiss action read
+                // as equally important (2026-08-26 audit finding). onSurfaceVariant
+                // matches the muted color already used for secondary/helper text.
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             ) {
                 Text("Skip for now")
             }
